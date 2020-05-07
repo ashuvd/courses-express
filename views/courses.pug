@@ -1,0 +1,27 @@
+extends layouts/main.layout.pug
+
+block variables
+  - var title = 'Курсы'
+
+block content
+  h1 Курсы
+  if courses.length
+    each course in courses
+      .row
+        .col.s12
+          .card
+            .card-image
+              img(src=course.img alt=course.title)
+            .card-content
+              span.card-title= course.title
+              p.price= course.price
+            .card-action
+              a(href="/courses/"+course.id target="_blank") Открыть курс
+              if (isAuth && user && (user.id === course.userId))
+                a(href="/courses/"+course.id+"/edit?allow=true") Редактировать курс
+  else
+    p Курсов пока нет
+block scripts
+  //script(src="/courses.js")
+
+

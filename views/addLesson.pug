@@ -1,0 +1,44 @@
+extends layouts/main.layout.pug
+
+block variables
+  - var title = 'Занятие'
+
+block content
+  if (Object.keys(addError).length)
+    p.alert #{addError}
+  h1 Добавить занятие
+  form(action="/lessons/add" method="POST" id="form-lesson" enctype="multipart/form-data")
+    .input-field
+      input#title.validate(name="title" type="text" required)
+      label(for="title") Название занятия
+      span.helper-text(data-error="Введите название")
+    .input-field
+      textarea#desc.materialize-textarea.validate(name="desc" required)
+      label(for="desc") Описание занятия
+      span.helper-text(data-error="Введите описание")
+    .file-field.input-field
+      .btn
+        span Видео занятия
+        input(type="file" name="video")
+      .file-path-wrapper
+        input.file-path.validate(type="text")
+    .row.form-row
+      .col.s12
+        ul.tabs
+          li.tab.col.s6
+            a(href="#files") Дополнительные видео файлы
+          li.tab.col.s6
+            a.active(href="#links") Дополнительные ссылки
+      #files.col.s12
+        ul.files
+        button.btn.red.btn-small.btn_file(type="button") Добавить еще файл
+      #links.col.s12
+        ul.links
+        button.btn.red.btn-small.btn_link(type="button") Добавить еще ссылку
+    input(type="hidden" name="_csrf" value=csrf)
+    input(type="hidden" name="id" value=course.id)
+    .input-field
+      button.btn.btn-primary(type="submit") Добавить занятие
+
+block scripts
+  //script(src="/lesson.js")

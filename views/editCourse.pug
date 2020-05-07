@@ -1,0 +1,46 @@
+extends layouts/main.layout.pug
+
+block variables
+  - var title = 'Редактировать ' + course.title
+
+block content
+  if (Object.keys(editError).length)
+    p.alert #{editError}
+  h1 Редактировать курс
+  form(action="/courses/edit" method="POST" class="course-form")
+    .input-field
+      input#title.validate(name="title" type="text" required value=course.title)
+      label(for="title") Название курса
+      span.helper-text(data-error="Введите название")
+    .input-field
+      input#price.validate(name="price" type="text" required min="1" value=course.price)
+      label(for="price") Цена курса
+      span.helper-text(data-error="Введите цену")
+    .input-field
+      input#img.validate(name="img" type="text" required value=course.img)
+      label(for="img") URL картинки
+      span.helper-text(data-error="Введите URL картинки")
+    input(type="hidden" name="id" value=course.id)
+    input(type="hidden" name="_csrf" value=csrf)
+    h3 Занятия:
+    if (lessons.length)
+      ul.collapsible
+        each lesson in lessons
+          li
+            .collapsible-header
+              span= lesson.title
+              a.material-icons(href=`/lessons/${lesson.id}`) visibility
+            .collapsible-body
+              .description= lesson.desc
+    else
+      p Занятий пока нет
+    .form-group
+      a(href="/courses/"+course.id+"/lessons/add") Добавить занятие
+    button.btn.btn-primary Сохранить
+  form(action="/courses/remove" method="POST")
+    input(type="hidden" name="id" value=course.id)
+    input(type="hidden" name="_csrf" value=csrf)
+    button.btn.red Удалить курс
+
+block scripts
+  //script(src="/add.js")

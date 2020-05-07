@@ -1,0 +1,48 @@
+extends layouts/main.layout.pug
+
+block variables
+  - var title = 'Страница авторизации'
+
+block content
+  .auth
+    .row
+      .col.s12
+        ul.tabs
+          li.tab.col.s6
+            a.active(href="#login") Войти
+          li.tab.col.s6
+            a(href="#register") Регистрация
+  #login.col.s6.offset-s3
+    if (Object.keys(loginError).length)
+      p.alert #{loginError}
+    h2.center Войти в админку
+    form(action="/auth/login" method="POST")
+      .input-field
+        input#email.validate(name="email" type="email" required)
+        label(for="email") Email
+        span.helper-text(data-error="Введите email")
+      .input-field
+        input#password.validate(name="password" type="password" required)
+        label(for="password") Пароль
+        span.helper-text(data-error="Введите пароль")
+      input(type="hidden" name="_csrf" value=csrf)
+      button.btn.btn-primary(type="submit") Войти
+  #register.col.s6.offset-s3
+    if (Object.keys(registerError).length)
+      p.alert #{registerError}
+    h2.center Создать аккаунт
+    form(action="/auth/register" method="POST")
+      .input-field
+        input#reEmail.validate(name="email" type="text" required)
+        label(for="reEmail") Email
+        span.helper-text(data-error="Введите email")
+      .input-field
+        input#rePassword.validate(name="password" type="password" required)
+        label(for="rePassword") Пароль
+        span.helper-text(data-error="Введите пароль")
+      .input-field
+        input#confirm.validate(name="confirm" type="password" required)
+        label(for="confirm") Пароль еще раз
+        span.helper-text(data-error="Введите пароль")
+      input(type="hidden" name="_csrf" value=csrf)
+      button.btn.btn-primary(type="submit") Зарегистрироваться

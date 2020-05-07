@@ -1,0 +1,32 @@
+(async () => {
+  try {
+    const fs = require('fs');
+    const path = require('path');
+    const { Server } = await import("../app.mjs");
+    const opts = (await import("../config/config.mjs")).default;
+    if (opts.sslKey || opts.sslCert) {
+      if (opts.sslKey && opts.sslCert) {
+        opts.ssl = {
+          key: fs.readFileSync(path.resolve(opts.sslKey)),
+          cert: fs.readFileSync(path.resolve(opts.sslCert))
+        };
+        delete opts.sslKey;
+        delete opts.sslCert;
+      } else {
+        console.error("Warning: Server will not run because either the key or the certificate has not been provided.");
+        process.exit(1);
+      }
+    }
+    Server(opts, (server, protocol) => {
+      const host = server.address().address;
+      const port = server.address().port;
+      console.log(`${protocol} Server started on ${host}, port: ${port}`);
+    });
+  } catch (error) {
+    console.log(error);
+    process.exit(1);
+  }
+  process.on("uncaughtException", function (e) {
+    console.error("Error: " + e);
+  });
+})()
