@@ -10,17 +10,6 @@ import clearCacheAsync from "../services/clearCacheAsync.mjs";
 import { v4 as uuid } from 'uuid';
 const router = express.Router();
 
-const toDate = date => {
-  return new Intl.DateTimeFormat('ru-RU', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit'
-  }).format(new Date(date));
-};
-
 router.get('/lessons/:id', auth, async (req, res) => {
   try {
     const lesson = await Lesson.getById(req.params.id);
@@ -37,7 +26,6 @@ router.get('/lessons/:id', auth, async (req, res) => {
     let comments = await Comment.getCommentsByLessonId(lesson.id);
     comments = await Promise.all(comments.map(async c => {
       c.user = await User.getById(c.userId);
-      c.date = toDate(c.date);
       return c;
     }))
     res.render('lesson', {

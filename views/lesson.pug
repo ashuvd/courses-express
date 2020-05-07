@@ -25,7 +25,9 @@ block content
         li.list__item
           .user
             span.user__name Пользователь: #{comment.user.login},
-            span.user__date дата: #{comment.date}
+            .user__date
+              span дата:
+              span.date= comment.date
           .message= comment.message
     form.form-comment
       .input-field.col.s12
