@@ -18,7 +18,10 @@ import accessRoutes from './routes/access.mjs';
 import varMiddleware from './middlewares/variables.mjs';
 import userMiddleware from './middlewares/user.mjs';
 
-const __dirname = path.dirname(new URL(import.meta.url).pathname).slice(1);
+import { fileURLToPath } from 'url';
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+// const __dirname = path.dirname(new URL(import.meta.url).pathname).slice(1);
+
 const upload = multer({ dest: path.join(__dirname, 'public', 'upload') });
 
 function Server(options, callback) {

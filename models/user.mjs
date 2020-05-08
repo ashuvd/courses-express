@@ -3,7 +3,9 @@ import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
 
-const __dirname = path.dirname(new URL(import.meta.url).pathname).slice(1);
+import { fileURLToPath } from 'url';
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+// const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
 export default class User {
   constructor(login, password = "", id = "", access = []) {
