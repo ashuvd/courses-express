@@ -1,0 +1,26 @@
+extends layouts/main.layout.pug
+
+block variables
+  - var title = 'Предоставить доступ'
+
+block content
+  if (Object.keys(accessError).length)
+    p.alert #{accessError}
+  h3 Предоставьте доступ к занятиям следующим пользователям:
+  form(action="/access" method="POST")
+    each u in users
+      if (u.id !== user.id)
+        .user
+          .user__name= u.login
+          .switch
+            label
+              | Off
+              input(type="checkbox" name=u.id checked=user.access.includes(u.id))
+              span.lever
+              | On
+    input(type="hidden" name="_csrf" value=csrf)
+    input(type="hidden" name="userId" value=user.id)
+    button.btn.btn-primary Предоставить доступ
+
+block scripts
+  //script(src="/add.js")

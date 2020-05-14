@@ -1,0 +1,42 @@
+extends layouts/auth.layout.pug
+
+block variables
+  - var title = lesson.title
+
+block content
+  .lesson
+    h1= lesson.title
+    .description= lesson.desc
+    video.video(src=lesson.video.dir controls)
+    if (lesson.files.length)
+      .subtitle Дополнительные видео файлы:
+      ul
+        each f in lesson.files
+          li
+            video.video(src=f.dir controls)
+    if (lesson.links.length)
+      .subtitle Дополнительные ссылки:
+      ul
+        each l in lesson.links
+          li
+            a(href=l target="_blank")= l
+    ul.list
+      each comment in comments
+        li.list__item
+          .user
+            span.user__name Пользователь: #{comment.user.login},
+            .user__date
+              span дата:
+              span.date  #{comment.date}
+          .message= comment.message
+    form.form-comment
+      .input-field.col.s12
+        textarea#textarea.materialize-textarea(name="message" data-length="120")
+        label(for="textarea") Комментарий
+      input(type="hidden" name="_csrf" value=csrf)
+      input(type="hidden" name="userId" value=user.id)
+      input(type="hidden" name="lessonId" value=lesson.id)
+      .input-field.col.s12
+        button.btn.waves-effect.waves-light(type="submit" name="action") Оставить комментарий
+          i.material-icons.right comment
+

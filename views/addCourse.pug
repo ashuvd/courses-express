@@ -1,0 +1,29 @@
+extends layouts/main.layout.pug
+
+block variables
+  - var title = 'Добавить курс'
+
+block content
+  if (Object.keys(addError).length)
+    p.alert #{addError}
+  h1 Добавить курс
+  form(action="/add" method="POST")
+    .input-field
+      input#title.validate(name="title" type="text" required)
+      label(for="title") Название курса
+      span.helper-text(data-error="Введите название")
+    .input-field
+      input#price.validate(name="price" type="text" required min="1")
+      label(for="price") Цена курса
+      span.helper-text(data-error="Введите цену")
+    .input-field
+      input#img.validate(name="img" type="text" required)
+      label(for="img") URL картинки
+      span.helper-text(data-error="Введите URL картинки")
+    input(type="hidden" name="_csrf" value=csrf)
+    input(type="hidden" name="userId" value=user.id)
+    button.btn.btn-primary Добавить курс
+
+block scripts
+  //script(src="/add.js")
+

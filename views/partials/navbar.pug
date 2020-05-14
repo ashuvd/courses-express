@@ -1,0 +1,38 @@
+nav
+  .nav-wrapper
+    a.brand-logo(href="/") Courses
+    ul#nav-mobile.right.hide-on-med-and-down
+      if isHome
+        li.active
+          a(href="/") Главная
+      else
+        li
+          a(href="/") Главная
+      if isCourses
+        li.active
+          a(href="/courses") Курсы
+      else
+        li
+          a(href="/courses") Курсы
+      if isAuth
+        if isAdd
+          li.active
+            a(href="/add") Добавить курс
+        else
+          li
+            a(href="/add") Добавить курс
+        if isAccess
+          li.active
+            a(href="/access") Предоставить доступ
+        else
+          li
+            a(href="/access") Предоставить доступ
+        li
+          a(href="/auth/logout") Выйти
+      else
+        if isLogin
+          li.active
+            a(href="/auth/login#login") Войти
+        else
+          li
+            a(href="/auth/login#login") Войти

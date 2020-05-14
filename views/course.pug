@@ -1,0 +1,25 @@
+extends layouts/auth.layout.pug
+
+block variables
+  - var title = course.title
+
+block content
+  .course
+    h1= course.title
+    img.course-img(src=course.img alt=course.title)
+    p.price.big= course.price
+    .row.contents
+      .col.s12
+        h4 Занятия:
+        if (course.lessons.length)
+          ul.collapsible
+            each lesson in course.lessons
+              li
+                .collapsible-header
+                  span= lesson.title
+                  if (user && (user.id === course.userId || access.includes(user.id)))
+                    a.material-icons(href=`/lessons/${lesson.id}`) visibility
+                .collapsible-body
+                  .description= lesson.desc
+        else
+          p Занятий пока нет
