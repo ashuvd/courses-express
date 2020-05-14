@@ -21,7 +21,7 @@ block content
       label(for="img") URL картинки
       span.helper-text(data-error="Введите URL картинки")
     input(type="hidden" name="_csrf" value=csrf)
-    input(type="hidden" name="userId" value=user.id)
+    input(type="hidden" name="userId" value=user._id)
     button.btn.btn-primary Добавить курс
 
 block scripts

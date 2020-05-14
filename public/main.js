@@ -105,6 +105,7 @@ if (formComment) {
       document.querySelector('.list').appendChild(li);
       e.target.elements.message.value = '';
     } catch (error) {
+      console.log(error)
       alert(error)
     }
   })

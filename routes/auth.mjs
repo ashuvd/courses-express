@@ -13,13 +13,13 @@ router.get('/login', (req, res) => {
 
 router.post('/login', async (req, res) => {
   try {
-    const {email, password} = req.body;
-    let candidate = await User.getByLogin(email);
+    const { email, password } = req.body;
+    let candidate = await User.findOne({ login: email });
     if (!candidate) {
       req.flash('loginError', 'Вы ввели неверный email или пароль');
       return res.redirect('/auth/login#login');
     }
-    const checked = await candidate.checkPassword(password);
+    const checked = await candidate.validatePassword(password);
     if (!checked) {
       req.flash('loginError', 'Вы ввели неверный email или пароль');
       return res.redirect('/auth/login#login');
@@ -39,18 +39,17 @@ router.get('/register', (req, res) => {
 
 router.post('/register', async (req, res) => {
   try {
-    const {email, password, confirm} = req.body;
+    const { email, password, confirm } = req.body;
     if (password !== confirm) {
       req.flash('registerError', 'Пароли не совпадают');
       return res.redirect('/auth/login#register');
     }
-    const candidate = await User.getByLogin(email);
+    const candidate = await User.findOne({ login: email });
     if (candidate) {
       req.flash('registerError', 'Такой пользователь уже существует');
       return res.redirect('/auth/login#register');
     }
-    const user = new User(email);
-    await user.hashPassword(password);
+    const user = new User({ login: email, password, access: [] });
     await user.save();
     req.session.user = user;
     req.session.isAuth = true;
@@ -62,9 +61,8 @@ router.post('/register', async (req, res) => {
 });
 
 router.get('/logout', (req, res) => {
-  // req.session.isAuth = false;
   req.session.destroy(() => {
     res.redirect('/auth/login#login');
-  })
+  });
 });
 export default router;

@@ -16,9 +16,9 @@ block content
               span.card-title= course.title
               p.price= course.price
             .card-action
-              a(href="/courses/"+course.id target="_blank") Открыть курс
-              if (isAuth && user && (user.id === course.userId))
-                a(href="/courses/"+course.id+"/edit?allow=true") Редактировать курс
+              a(href="/courses/"+course._id target="_blank") Открыть курс
+              if (isAuth && user && (user._id.toString() === course.userId))
+                a(href="/courses/"+course._id+"/edit?allow=true") Редактировать курс
   else
     p Курсов пока нет
 block scripts

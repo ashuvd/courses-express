@@ -9,17 +9,17 @@ block content
   h3 Предоставьте доступ к занятиям следующим пользователям:
   form(action="/access" method="POST")
     each u in users
-      if (u.id !== user.id)
+      if (u._id.toString() !== user._id.toString())
         .user
           .user__name= u.login
           .switch
             label
               | Off
-              input(type="checkbox" name=u.id checked=user.access.includes(u.id))
+              input(type="checkbox" name=u._id checked=user.access.includes(u._id.toString()))
               span.lever
               | On
     input(type="hidden" name="_csrf" value=csrf)
-    input(type="hidden" name="userId" value=user.id)
+    input(type="hidden" name="userId" value=user._id)
     button.btn.btn-primary Предоставить доступ
 
 block scripts

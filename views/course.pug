@@ -17,8 +17,8 @@ block content
               li
                 .collapsible-header
                   span= lesson.title
-                  if (user && (user.id === course.userId || access.includes(user.id)))
-                    a.material-icons(href=`/lessons/${lesson.id}`) visibility
+                  if (user && (user._id.toString() === course.userId || access.includes(user._id.toString())))
+                    a.material-icons(href=`/lessons/${lesson._id}`) visibility
                 .collapsible-body
                   .description= lesson.desc
         else

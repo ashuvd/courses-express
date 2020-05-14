@@ -20,7 +20,7 @@ block content
       input#img.validate(name="img" type="text" required value=course.img)
       label(for="img") URL картинки
       span.helper-text(data-error="Введите URL картинки")
-    input(type="hidden" name="id" value=course.id)
+    input(type="hidden" name="id" value=course._id)
     input(type="hidden" name="_csrf" value=csrf)
     h3 Занятия:
     if (lessons.length)
@@ -29,7 +29,7 @@ block content
           li
             .collapsible-header
               span= lesson.title
-              a.material-icons(href=`/lessons/${lesson.id}`) visibility
+              a.material-icons(href=`/lessons/${lesson._id}`) visibility
             .collapsible-body
               .description= lesson.desc
     else
@@ -38,7 +38,7 @@ block content
       a(href="/courses/"+course.id+"/lessons/add") Добавить занятие
     button.btn.btn-primary Сохранить
   form(action="/courses/remove" method="POST")
-    input(type="hidden" name="id" value=course.id)
+    input(type="hidden" name="id" value=course._id)
     input(type="hidden" name="_csrf" value=csrf)
     button.btn.red Удалить курс
 

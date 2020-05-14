@@ -5,61 +5,70 @@ import User from '../models/user.mjs';
 import Lesson from '../models/lesson.mjs';
 import Comment from '../models/comment.mjs';
 import auth from '../middlewares/auth.mjs';
-import renameAsync from "../services/renameAsync.mjs";
-import clearCacheAsync from "../services/clearCacheAsync.mjs";
+import renameAsync from '../services/renameAsync.mjs';
+import clearCacheAsync from '../services/clearCacheAsync.mjs';
 import { v4 as uuid } from 'uuid';
 const router = express.Router();
 
 router.get('/lessons/:id', auth, async (req, res) => {
   try {
-    const lesson = await Lesson.getById(req.params.id);
+    const lesson = await Lesson.findById(req.params.id);
     if (!lesson) {
-      res.json({message: 'Такого занятия не существует'});
-      return
+      res.json({ message: 'Такого занятия не существует' });
+      return;
     }
-    const course = await Course.getById(lesson.courseId);
-    const access = (await User.getById(course.userId)).access;
-    if (req.user.id !== course.userId && !access.includes(req.user.id)) {
-      res.json({message: 'Вам запрещен доступ к этому занятию'});
-      return
+    const course = await Course.findById(lesson.courseId);
+    const access = (await User.findById(course.userId)).access;
+    if (
+      req.user._id.toString() !== course.userId &&
+      !access.includes(req.user._id.toString())
+    ) {
+      res.json({ message: 'Вам запрещен доступ к этому занятию' });
+      return;
     }
-    let comments = await Comment.getCommentsByLessonId(lesson.id);
-    comments = await Promise.all(comments.map(async c => {
-      c.user = await User.getById(c.userId);
-      return c;
-    }))
+    let comments = await Comment.find({ lessonId: lesson._id });
+    comments = await Promise.all(
+      comments.map(async c => {
+        c.user = await User.findById(c.userId);
+        return c;
+      })
+    );
     res.render('lesson', {
       lesson,
       comments,
       user: req.user
     });
   } catch (error) {
-    res.json({message: error.message || error});
+    res.json({ message: error.message || error });
   }
 });
 
 router.get('/courses/:id/lessons/add', auth, async (req, res) => {
   try {
-    const course = await Course.getById(req.params.id);
+    const course = await Course.findById(req.params.id);
     res.render('addLesson', {
       course,
       addError: req.flash('addError')
     });
   } catch (error) {
-    res.json({message: error.message || error});
+    res.json({ message: error.message || error });
   }
 });
 
 router.post('/comments', auth, async (req, res) => {
   try {
-    const comment = new Comment(req.body);
+    const comment = new Comment({
+      message: req.body.message,
+      userId: req.body.userId,
+      lessonId: req.body.lessonId,
+      date: new Date()
+    });
     await comment.save();
-    comment.user = req.user;
-    res.json({...comment});
+    res.json({ ...comment._doc, user: req.user });
   } catch (error) {
-    res.json({message: error.message || error});
+    res.json({ message: error.message || error });
   }
-})
+});
 
 router.post('/lessons/add', auth, async (req, res) => {
   try {
@@ -86,38 +95,53 @@ router.post('/lessons/add', auth, async (req, res) => {
     let count = 1;
     let linkName = `dopLink${count}`;
     while (req.body[linkName]) {
-      if (req.body[linkName].indexOf('http://') === -1 && req.body[linkName].indexOf('https://') === -1) {
+      if (
+        req.body[linkName].indexOf('http://') === -1 &&
+        req.body[linkName].indexOf('https://') === -1
+      ) {
         await clearCacheAsync();
-        req.flash('addError', 'Вы передали не корректную ссылку на дополнительный материал');
+        req.flash(
+          'addError',
+          'Вы передали не корректную ссылку на дополнительный материал'
+        );
         res.redirect(`/courses/${req.body.id}/lessons/add`);
         return;
       }
       links.push(req.body[linkName]);
       linkName = `dopLink${++count}`;
     }
-    let files = await Promise.all(req.files.map(async (file) => {
-      const fieldName = file.fieldname;
-      const fileName = file.originalname;
-      const fileMimeType = file.mimetype;
-      const fileSizeInBytes = file.size;
-      const fileSizeInMegabytes = (fileSizeInBytes / 1000000.0).toFixed(2);
-      const [extension] = fileName.indexOf('.') !== -1 ? fileName.split('.').reverse() : [''];
-      const filePath = path.join('public', 'upload', uuid() + '.' + extension);
+    let files = await Promise.all(
+      req.files.map(async file => {
+        const fieldName = file.fieldname;
+        const fileName = file.originalname;
+        const fileMimeType = file.mimetype;
+        const fileSizeInBytes = file.size;
+        const fileSizeInMegabytes = (fileSizeInBytes / 1000000.0).toFixed(2);
+        const [extension] =
+          fileName.indexOf('.') !== -1 ? fileName.split('.').reverse() : [''];
+        const filePath = path.join(
+          'public',
+          'upload',
+          uuid() + '.' + extension
+        );
 
-      if (!['avi', 'mp4'].includes(extension)) {
-        await clearCacheAsync();
-        return Promise.reject(`Формат видео файла [.${extension}] не поддерживается. Поддерживаются следующие форматы: [.avi, .mp4]`)
-      }
+        if (!['avi', 'mp4'].includes(extension)) {
+          await clearCacheAsync();
+          return Promise.reject(
+            `Формат видео файла [.${extension}] не поддерживается. Поддерживаются следующие форматы: [.avi, .mp4]`
+          );
+        }
 
-      await renameAsync(file.path, filePath);
+        await renameAsync(file.path, filePath);
 
-      return {
-        fieldName,
-        fileMimeType,
-        fileSizeInMegabytes,
-        dir: path.normalize('/' + filePath.substr(filePath.indexOf('upload')))
-      };
-    }));
+        return {
+          fieldName,
+          fileMimeType,
+          fileSizeInMegabytes,
+          dir: path.normalize('/' + filePath.substr(filePath.indexOf('upload')))
+        };
+      })
+    );
 
     const lesson = new Lesson({
       courseId: req.body.id,
@@ -126,15 +150,14 @@ router.post('/lessons/add', auth, async (req, res) => {
       video: files.find(f => f.fieldName === 'video'),
       files: files.filter(f => f.fieldName !== 'video'),
       links
-    })
+    });
     await lesson.save();
 
     res.redirect('/courses');
-  }
-  catch (error) {
+  } catch (error) {
     req.flash('addError', error.message || error);
     res.redirect(`/courses/${req.body.id}/lessons/add`);
   }
-})
+});
 
 export default router;

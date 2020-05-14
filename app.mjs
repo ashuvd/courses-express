@@ -18,6 +18,8 @@ import accessRoutes from './routes/access.mjs';
 import varMiddleware from './middlewares/variables.mjs';
 import userMiddleware from './middlewares/user.mjs';
 
+import db from './db/index.mjs';
+
 import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // const __dirname = path.dirname(new URL(import.meta.url).pathname).slice(1);
@@ -67,7 +69,12 @@ function Server(options, callback) {
     options.port += 80;
     server = http.createServer(app);
   }
-  server.listen(options.port, options.host, () => callback(server, protocol));
+  db().then((message) => {
+    console.log(message);
+    server.listen(options.port, options.host, () => callback(server, protocol));
+  }).catch((error) => {
+    console.log(error);
+  })
 }
 
 export {
