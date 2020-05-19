@@ -7,14 +7,14 @@ const router = express.Router();
 
 router.get('/', async (req, res) => {
   try {
-    let courses = await Course.getAll();
+    let courses = await Course.find();
     res.render('courses', {
       isCourses: true,
       courses,
       user: req.user
     });
   } catch (error) {
-    res.json({message: error.message || error});
+    res.json({ message: error.message || error });
   }
 });
 
@@ -23,12 +23,12 @@ router.get('/:id/edit', auth, async (req, res) => {
     if (!req.query.allow) {
       return res.redirect('/');
     }
-    const course = await Course.getById(req.params.id);
-    if (req.user.id !== course.userId) {
-      res.json({message: 'Вам запрещен доступ к этому курсу'});
-      return
+    const course = await Course.findById(req.params.id);
+    if (req.user._id.toString() !== course.userId) {
+      res.json({ message: 'Вам запрещен доступ к этому курсу' });
+      return;
     }
-    const lessons = (await Lesson.getLessonsByCourseId(course.id)) || [];
+    const lessons = (await Lesson.find({ courseId: course._id })) || [];
 
     res.render('editCourse', {
       course,
@@ -36,22 +36,22 @@ router.get('/:id/edit', auth, async (req, res) => {
       editError: req.flash('editError')
     });
   } catch (error) {
-    res.json({message: error.message || error});
+    res.json({ message: error.message || error });
   }
 });
 
 router.get('/:id', async (req, res) => {
   try {
-    const course = await Course.getById(req.params.id);
-    course.lessons = await Lesson.getLessonsByCourseId(course.id) || [];
-    const access = (await User.getById(course.userId)).access;
+    const course = await Course.findById(req.params.id);
+    course.lessons = (await Lesson.find({ courseId: course._id })) || [];
+    const access = (await User.findById(course.userId)).access;
     res.render('course', {
       course,
       user: req.user,
       access
     });
   } catch (error) {
-    res.json({message: error.message || error});
+    res.json({ message: error.message || error });
   }
 });
 
@@ -59,18 +59,18 @@ router.post('/edit', auth, async (req, res) => {
   try {
     await Course.update({
       ...req.body,
-      userId: req.user.id
+      userId: req.user._id
     });
     res.redirect('/courses');
   } catch (error) {
     req.flash('editError', error.message || error);
     res.redirect(`/courses/${req.body.id}/edit?allow=true`);
   }
-})
+});
 
 router.post('/remove', auth, async (req, res) => {
   try {
-    await Course.remove(req.body.id);
+    await Course.deleteOne({ _id: req.body.id });
     res.redirect('/courses');
   } catch (error) {
     req.flash('editError', error.message || error);

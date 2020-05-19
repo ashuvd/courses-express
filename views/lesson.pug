@@ -34,8 +34,8 @@ block content
         textarea#textarea.materialize-textarea(name="message" data-length="120")
         label(for="textarea") Комментарий
       input(type="hidden" name="_csrf" value=csrf)
-      input(type="hidden" name="userId" value=user.id)
-      input(type="hidden" name="lessonId" value=lesson.id)
+      input(type="hidden" name="userId" value=user._id)
+      input(type="hidden" name="lessonId" value=lesson._id)
       .input-field.col.s12
         button.btn.waves-effect.waves-light(type="submit" name="action") Оставить комментарий
           i.material-icons.right comment

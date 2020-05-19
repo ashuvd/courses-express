@@ -19,6 +19,7 @@ $ npm run имя_скрипта
   ```sh
     SERVER_HOST=127.0.0.1
     SERVER_PORT=8000
+    MONGO_URI=mongodb://localhost:27017/courses
     SSL_KEY=config/domain.key
     SSL_CERT=config/domain.crt
   ```

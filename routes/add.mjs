@@ -16,14 +16,17 @@ router.post('/', auth, async (req, res) => {
       res.redirect(`/add`);
       return;
     }
-    if (req.body.img.indexOf('http://') === -1 && req.body.img.indexOf('https://') === -1) {
+    if (
+      req.body.img.indexOf('http://') === -1 &&
+      req.body.img.indexOf('https://') === -1
+    ) {
       req.flash('addError', 'Вы передали не корректный URL');
       res.redirect(`/add`);
       return;
     }
     const course = new Course({
       ...req.body,
-      userId: req.user.id
+      userId: req.user._id
     });
     await course.save();
     res.redirect('/courses');
