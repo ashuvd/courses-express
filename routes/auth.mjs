@@ -1,5 +1,10 @@
 import express from 'express';
+import jwt from 'jsonwebtoken';
 import User from '../models/user.mjs';
+import config from '../config/config.mjs'
+
+import dotenv from 'dotenv';
+dotenv.config();
 
 const router = express.Router();
 
@@ -24,8 +29,11 @@ router.post('/login', async (req, res) => {
       req.flash('loginError', 'Вы ввели неверный email или пароль');
       return res.redirect('/auth/login#login');
     }
-    req.session.user = candidate;
+    const token = jwt.sign({ userId: candidate._id }, config.keys.secret, {
+      expiresIn: config.keys.expiresIn
+    });
     req.session.isAuth = true;
+    res.cookie('jwt', token, { maxAge: 900000, httpOnly: true });
     res.redirect('/');
   } catch (error) {
     req.flash('loginError', error.message || error);
@@ -51,9 +59,7 @@ router.post('/register', async (req, res) => {
     }
     const user = new User({ login: email, password, access: [] });
     await user.save();
-    req.session.user = user;
-    req.session.isAuth = true;
-    res.redirect('/');
+    res.redirect('/auth/login#login');
   } catch (error) {
     req.flash('registerError', error.message || error);
     return res.redirect('/auth/login#register');

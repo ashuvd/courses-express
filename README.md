@@ -20,6 +20,8 @@ $ npm run имя_скрипта
     SERVER_HOST=127.0.0.1
     SERVER_PORT=8000
     MONGO_URI=mongodb://localhost:27017/courses
+    KEY_SECRET=faffas65664fs6d1f65asd4fasd43f6sad54
+    TOKEN_EXPIRES_IN=600
     SSL_KEY=config/domain.key
     SSL_CERT=config/domain.crt
   ```
