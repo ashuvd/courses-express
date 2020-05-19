@@ -5,6 +5,7 @@ import http from "http";
 import session from 'express-session';
 import passport from 'passport';
 import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
 import csrf from 'csurf';
 import flash from 'connect-flash';
 import path from "path";
@@ -18,7 +19,6 @@ import lessonsRoutes from './routes/lessons.mjs';
 import accessRoutes from './routes/access.mjs';
 
 import varMiddleware from './middlewares/variables.mjs';
-import userMiddleware from './middlewares/user.mjs';
 
 import db from './db/index.mjs';
 
@@ -48,20 +48,19 @@ function Server(options, callback) {
   app.use(session({
     secret: 'some secret',
     resave: false,
-    saveUninitialized: false,
-    // cookie: { secure: true }
+    saveUninitialized: false
   }))
+  app.use(cookieParser());
   app.use(flash());
   app.use(csrf());
   app.use(varMiddleware);
-  app.use(userMiddleware);
 
   app.use('/auth', authRoutes);
   app.use('/', homeRoutes);
-  app.use('/courses', coursesRoutes);
-  app.use('/add', addRoutes);
-  app.use('/', lessonsRoutes);
-  app.use('/access', accessRoutes);
+  app.use('/courses', coursesRoutes(passport));
+  app.use('/add', addRoutes(passport));
+  app.use('/', lessonsRoutes(passport));
+  app.use('/access', accessRoutes(passport));
 
   let server;
   let protocol;

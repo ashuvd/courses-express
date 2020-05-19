@@ -16,7 +16,7 @@ block content
     if (Object.keys(loginError).length)
       p.alert #{loginError}
     h2.center Войти в админку
-    form(action="/auth/login" method="POST")
+    form(action="/auth/login" method="POST" id="form-login")
       .input-field
         input#email.validate(name="email" type="email" required)
         label(for="email") Email
