@@ -73,44 +73,6 @@ icons.forEach(i => i.addEventListener('click', e => {
   e.stopPropagation();
 }))
 
-// const forms = document.querySelectorAll('.form-bearer');
-// forms.forEach(f => f.addEventListener('submit', e => {
-//   console.log(e);
-// }))
-
-// const logoutLink = document.getElementById('logout');
-// if (logoutLink) {
-//   logoutLink.onclick = () => {
-//     localStorage.removeItem('token');
-//   }
-// }
-
-// const formLogin = document.getElementById('form-login');
-// if (formLogin) {
-//   formLogin.addEventListener('submit', async (e) => {
-//     try {
-//       e.preventDefault();
-//       const email = e.target.elements.email.value;
-//       const password = e.target.elements.password.value;
-//       const csrf = e.target.elements._csrf.value;
-//       const response = await fetch('/auth/login', {
-//         method: 'POST',
-//         headers: {
-//           'Content-Type': 'application/json'
-//           // 'Content-Type': 'application/x-www-form-urlencoded'
-//           // 'X-XSRF-TOKEN': csrf
-//         },
-//         body: JSON.stringify({_csrf: csrf, email, password})
-//       })
-//       const {token} = await response.json();
-//       localStorage.setItem('token', token);
-//       window.location.href = "/";
-//     } catch (error) {
-//       console.log(error)
-//       alert(error)
-//     }
-//   })
-// }
 const formComment = document.querySelector('.form-comment');
 if (formComment) {
   formComment.addEventListener('submit', async (e) => {
