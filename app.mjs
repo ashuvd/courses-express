@@ -3,10 +3,12 @@ import multer from 'multer';
 import https from "https";
 import http from "http";
 import session from 'express-session';
+import passport from 'passport';
 import bodyParser from 'body-parser';
 import csrf from 'csurf';
 import flash from 'connect-flash';
 import path from "path";
+import hookJWTStrategy from './services/passportStrategy.mjs';
 
 import authRoutes from './routes/auth.mjs';
 import homeRoutes from './routes/home.mjs';
@@ -34,6 +36,9 @@ function Server(options, callback) {
   // parse application/json
   app.use(bodyParser.json())
   app.use(upload.any());
+
+  app.use(passport.initialize());
+  hookJWTStrategy(passport);
 
   app.use(express.static(path.join(__dirname, 'public')));
 

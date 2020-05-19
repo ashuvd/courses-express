@@ -6,7 +6,10 @@ const defaultConfig = {
   host: process.env.SERVER_HOST || '0.0.0.0',
   mongoUri: process.env.MONGO_URI,
   sslKey: process.env.SSL_KEY || '',
-  sslCert: process.env.SSL_CERT || ''
+  sslCert: process.env.SSL_CERT || '',
+  keys: {
+    secret: process.env.KEY_SECRET || 'secret'
+  }
 };
 
 export default defaultConfig;
